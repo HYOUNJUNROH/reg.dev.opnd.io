@@ -1,0 +1,24 @@
+# https://taskfile.dev
+
+version: "3"
+
+tasks:
+  update:
+    desc: update tasks
+    cmds:
+      - git submodule add -b main --force https://git.dev.opnd.io/common/tasks tasks || true
+      - git submodule init
+      - git submodule update
+      - cd tasks && git fetch && git switch main && git pull
+    status:
+      - test -f tasks/Taskfile.yaml
+    generates:
+      - tasks
+
+  clean:
+    desc: update tasks
+    cmds:
+      - git submodule deinit -f tasks || true
+      - git rm --cached tasks || true
+      - git rm -f tasks || true
+      - '{{if eq OS "windows"}}cmd /c rd{{else}}rm -rf{{end}} tasks || true'

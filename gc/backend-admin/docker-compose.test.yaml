@@ -1,0 +1,31 @@
+version: "3"
+services:
+  docker:
+    image: docker:dind
+    restart: always
+    privileged: true
+    # network_mode: host
+    environment:
+      - DOCKER_HOST=tcp://docker:2375
+      - DOCKER_TLS_CERTDIR=
+      - DOCKER_DRIVER=overlay2
+    command: [ "--storage-driver=overlay2", "--mtu=1400" ]
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+    ports:
+      - 2375:2375
+      - 21432:21432
+      - 21379:21379
+      - 21000:21000
+      - 21200:21200
+      - 21022:21022
+    volumes:
+      # - ./docker:/var/lib/docker
+      - docker:/var/lib/docker:z
+      - ${PWD}/tmp:${PWD}/tmp:z
+      # - DOCKER_HOST=tcp://docker:2375
+
+volumes:
+  docker: {}

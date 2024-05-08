@@ -1,0 +1,197 @@
+@font-face {
+  font-family: "Pretendard-Medium";
+  font-style: normal;
+  font-weight: 500;
+  src: url("../css/font/Pretendard-Medium.otf") format("opentype"),
+    url("https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-Medium.woff2")
+      format("woff2"),
+    url("https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-Medium.woff")
+      format("woff");
+}
+
+@font-face {
+  font-family: "Pretendard";
+  font-style: normal;
+  font-weight: 400;
+  src: url("../css/font/Pretendard-Regular.otf") format("opentype"),
+    url("https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-Regular.woff2")
+      format("woff2"),
+    url("https://cdn.jsdelivr.net/gh/webfontworld/pretendard/Pretendard-Regular.woff")
+      format("woff");
+}
+
+// reset
+html {
+  min-height: 100%;
+  color: #3c3c3b;
+  font-size: 14px;
+  font-family: "Pretendard", arial, sans-serif;
+}
+body {
+  min-height: 100%;
+  background: #161616;
+}
+.clabi-wrap {
+  background-color: #fff;
+}
+
+blockquote,
+body,
+dd,
+dl,
+dt,
+fieldset,
+figure,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+html,
+iframe,
+legend,
+li,
+ol,
+p,
+pre,
+textarea,
+ul {
+  margin: 0;
+  padding: 0;
+}
+cite,
+cite a:link,
+cite a:visited {
+  color: #3c3c3b;
+  font-style: normal;
+}
+button,
+input,
+select {
+  margin: 0;
+}
+button {
+  background: none;
+  padding: 0;
+  border: 0 none;
+  cursor: pointer;
+}
+ol,
+ul {
+  list-style: none;
+}
+a {
+  text-decoration: none;
+  cursor: pointer;
+  color: #222;
+}
+img {
+  max-width: 100%;
+  max-height: 100%;
+  vertical-align: middle;
+}
+iframe {
+  width: 0;
+  min-width: 100%;
+  max-width: 100%;
+}
+img,
+fieldset,
+iframe {
+  border: 0;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+caption {
+  text-indent: -9999px;
+  font-size: 0;
+}
+iframe {
+  height: 0;
+  max-height: 100%;
+  max-width: 100%;
+  min-height: 100%;
+  min-width: 100%;
+  width: 0;
+}
+:focus[data-focus-method="mouse"]:not(input):not(textarea):not(select),
+:focus[data-focus-method="touch"]:not(input):not(textarea):not(select) {
+  outline: none;
+}
+::-moz-focus-inner {
+  border: 0;
+  padding: 0;
+}
+input::placeholder {
+  color: #cbcbcb;
+}
+legend {
+  height: 0;
+  font-size: 0;
+}
+input,
+select {
+  font-family: "Noto Sans KR", "Noto Sans JP", arial, sans-serif;
+}
+input[type="button"],
+input[type="email"],
+input[type="password"],
+input[type="reset"],
+input[type="search"],
+input[type="submit"],
+input[type="tel"],
+input[type="text"] {
+  -webkit-appearance: none;
+}
+
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button,
+input[type="search"]::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
+}
+// ios15 텍스트 정렬
+input::-webkit-date-and-time-value {
+  text-align: left;
+}
+input[type="date"]::-webkit-clear-button,
+input[type="date"]::-webkit-inner-spin-button {
+  display: none;
+  -webkit-appearance: none;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  margin: 0;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  color: transparent;
+}
+.blind {
+  font-size: 0;
+  text-indent: -9999px;
+}
+
+input,
+select {
+  outline: none;
+}
+input,
+select,
+textarea {
+  &:focus {
+    box-shadow: 0 0 3px 0 rgba(62, 164, 62, 1);
+  }
+}

@@ -1,0 +1,124 @@
+# https://taskfile.dev
+
+version: "3"
+
+includes:
+  tasks:
+    taskfile: ./tasks/Taskfile.yaml
+    optional: true
+  docker:
+    taskfile: ./tasks/docker/Taskfile.yaml
+    optional: true
+  install:
+    taskfile: ./tasks/install/Taskfile.yaml
+    optional: true
+  tasks_init:
+    taskfile: ./Taskfile_tasks.yaml
+    internal: true
+
+dotenv: [".env"]
+
+vars:
+  GIT_URL:
+    sh: git ls-remote --get-url
+  GIT_GROUP: '{{first (slice (splitList "/" .GIT_URL) 3 4)}}'
+  GIT_PROJECT: '{{first (slice (splitList ".git" (first (slice (splitList "/" .GIT_URL) 4 5))) 0)}}'
+
+tasks:
+  update_tasks:
+    desc: update tasks
+    cmds:
+      - task: tasks_init:update
+
+  clean_tasks:
+    desc: update tasks
+    cmds:
+      - task: tasks_init:clean
+
+  generate:swagger:
+    desc: Generate swagger files
+    cmds:
+      - swag i --parseDependency --parseInternal --parseDepth 1 --output pkg/handler/docs
+
+  gen:
+    desc: GenerateCode
+    cmds:
+      - gen --templateDir=tasks/backend/gen/template --mapping=tasks/backend/gen/mapping.json --sqltype=postgres --gorm -x auth.* --connstr "search_path=public user=$DB_USER password=$DB_PASSWORD dbname=$DB_NAME host=$DB_HOST port=$DB_PORT sslmode=disable TimeZone=Asia/Seoul" --out=pkg --host $DB_HOST --port $DB_PORT --database public --module=git.dev.opnd.io/{{.GIT_GROUP}}/{{.GIT_PROJECT}}/pkg/model --json --gorm --model=model --overwrite --guregu
+      - gen --templateDir=tasks/backend/gen/template --mapping=tasks/backend/gen/mapping.json --sqltype=postgres --gorm --table=users --connstr "search_path=auth user=$DB_USER password=$DB_PASSWORD dbname=$DB_NAME host=$DB_HOST port=$DB_PORT sslmode=disable TimeZone=Asia/Seoul" --out=pkg --host $DB_HOST --port $DB_PORT --database auth --module=git.dev.opnd.io/{{.GIT_GROUP}}/{{.GIT_PROJECT}}/pkg/model --json --gorm --model=model --overwrite --guregu
+
+  test:
+    desc: Test
+    cmds:
+      - go clean -testcache
+      - go test -p 1 ./... -v
+
+  coverage:
+    desc: Coverage
+    cmds:
+      - go clean -testcache
+      - go test -p 1 -cover ./...
+
+  clean:test:
+    desc: clean test dockers
+    cmds:
+      - docker rm -f $(docker ps -a --format "{{`{{.ID}}`}}" --filter="label=temp=true")
+
+  dev:
+    deps:
+      - task: generate:swagger
+    desc: dev
+    cmds:
+      - air serve
+
+  mkcert:
+    desc: mkcert localhost
+    cmds:
+      - mkcert localhost
+
+  grpcui:
+    desc: grpcui
+    cmds:
+      - grpcui -insecure localhost:1323
+
+  backend-builder:
+    vars:
+      COMMON_KEY_FILE: '{{.COMMON_KEY_FILE | default "${PWD}/deploykey/common/id_ed25519.key"}}'
+    run: once
+    cmds:
+      - task: docker:build
+        vars:
+          MESSAGE: backend-builder
+          CI_REGISTRY_PATH: "{{.GIT_GROUP}}/{{.GIT_PROJECT}}-builder"
+          DOCKERFILE_PATH: Dockerfile.backend-builder
+          DOCKERBUILD_PATH: .
+          BUILD_ARGS: |
+            API_BASE_URL
+            BASE_IMAGE=golang:1.20-bullseye
+          SECRETS: |
+            id=ssh-script,src=${PWD}/tasks/docker/install_ssh_key.sh
+            id=ssh-key,src={{.COMMON_KEY_FILE}}
+
+  backend:
+    vars:
+      SLUG_BRANCH_NAME:
+        sh: echo ${BRANCH_NAME:-$(git symbolic-ref --short HEAD)} | slug-cat
+    deps:
+      - task: backend-builder
+    cmds:
+      - task: docker:build
+        vars:
+          MESSAGE: backend-builder
+          CI_REGISTRY_PATH: "{{.GIT_GROUP}}/{{.GIT_PROJECT}}"
+          DOCKERFILE_PATH: Dockerfile
+          DOCKERBUILD_PATH: .
+          ENV_IS_PULL: "{{.ENV_IS_PUSH}}"
+          BUILD_ARGS: |
+            API_BASE_URL
+            BUILDER_IMAGE={{.ENV_CI_REGISTRY}}/{{.GIT_GROUP}}/{{.GIT_PROJECT}}-builder:{{.SLUG_BRANCH_NAME}}
+            BASE_IMAGE=gcr.io/distroless/base-debian11
+            APP_NAME={{.GIT_GROUP}}-{{.GIT_PROJECT}}
+
+  all:
+    desc: CI 빌드
+    deps:
+      - task: backend

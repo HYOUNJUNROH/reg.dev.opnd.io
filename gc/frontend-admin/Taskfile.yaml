@@ -1,0 +1,84 @@
+# https://taskfile.dev
+
+version: "3"
+
+includes:
+  tasks:
+    taskfile: ./tasks/Taskfile.yaml
+    optional: true
+  docker:
+    taskfile: ./tasks/docker/Taskfile.yaml
+    optional: true
+  install:
+    taskfile: ./tasks/install/Taskfile.yaml
+    optional: true
+  tasks_init:
+    taskfile: ./Taskfile_tasks.yaml
+    internal: true
+
+dotenv: [".env"]
+
+vars:
+  GIT_URL:
+    sh: git ls-remote --get-url
+  GIT_GROUP: '{{first (slice (splitList "/" .GIT_URL) 3 4)}}'
+  GIT_PROJECT: '{{first (slice (splitList ".git" (first (slice (splitList "/" .GIT_URL) 4 5))) 0)}}'
+
+tasks:
+  update_tasks:
+    desc: update tasks
+    cmds:
+      - task: tasks_init:update
+
+  clean_tasks:
+    desc: update tasks
+    cmds:
+      - task: tasks_init:clean
+
+  frontend-builder:
+    vars:
+      COMMON_KEY_FILE: '{{.COMMON_KEY_FILE | default "${PWD}/deploykey/common/id_ed25519.key"}}'
+    run: once
+    cmds:
+      - task: docker:build
+        vars:
+          MESSAGE: frontend-builder
+          CI_REGISTRY_PATH: "{{.GIT_GROUP}}/{{.GIT_PROJECT}}-builder"
+          DOCKERFILE_PATH: Dockerfile.builder
+          DOCKERBUILD_PATH: .
+          BUILD_ARGS: |
+            API_BASE_URL
+            BASE_IMAGE=node:16-bullseye
+          SECRETS: |
+            id=ssh-script,src=${PWD}/tasks/docker/install_ssh_key.sh
+            id=ssh-key,src={{.COMMON_KEY_FILE}}
+
+  frontend:
+    vars:
+      SLUG_BRANCH_NAME:
+        sh: echo ${BRANCH_NAME:-$(git symbolic-ref --short HEAD)} | slug-cat
+    deps:
+      - task: frontend-builder
+    cmds:
+      - task: docker:build
+        vars:
+          MESSAGE: frontend-builder
+          CI_REGISTRY_PATH: "{{.GIT_GROUP}}/{{.GIT_PROJECT}}"
+          DOCKERFILE_PATH: Dockerfile
+          DOCKERBUILD_PATH: .
+          ENV_IS_PULL: "{{.ENV_IS_PUSH}}"
+          BUILD_ARGS: |
+            API_BASE_URL
+            BUILDER_IMAGE={{.ENV_CI_REGISTRY}}/{{.GIT_GROUP}}/{{.GIT_PROJECT}}-builder:{{.SLUG_BRANCH_NAME}}
+            BASE_IMAGE=gcr.io/distroless/nodejs:16
+            APP_NAME=gc-frontend-admin
+
+  all:
+    desc: all
+    deps:
+      - task: frontend
+
+  info:
+    cmds:
+      - echo {{.GIT_GROUP}} / {{.GIT_PROJECT}}
+      - echo {{.GIT_COMMIT}} / {{.GIT_BRANCH}}

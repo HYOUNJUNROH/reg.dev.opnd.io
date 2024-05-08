@@ -1,0 +1,32 @@
+# syntax=docker/dockerfile:1.4
+ARG BASE_IMAGE=golang:1.20-bullseye
+FROM ${BASE_IMAGE} AS builder
+
+RUN sh -c "$(curl --location https://taskfile.dev/install.sh)" -- -d -b /usr/local/bin
+
+# ADD tasks/install/Taskfile.yaml tasks/install/Taskfile.yaml
+
+ADD Taskfile.yaml tasks/install/Taskfile.yaml
+ADD Taskfile_tasks.yaml tasks/install/Taskfile_tasks.yaml
+RUN task -t tasks/install/Taskfile.yaml tools
+
+ENV GO118MODULE='on'
+ENV CGO_ENABLED=1
+ARG GOPROXY=https://goproxy.dev.opnd.io,https://proxy.golang.org,direct
+ARG GOPRIVATE=git.dev.opnd.io,nas.dev.opnd.io
+ENV GOPROXY=${GOPROXY}
+ENV GOPRIVATE=${GOPRIVATE}
+
+WORKDIR /app
+
+ADD Taskfile.yaml Taskfile_tasks.yaml ./
+ADD tasks/ ./tasks/
+
+ADD go.* ./
+
+RUN  --mount=type=secret,id=ssh-script,dst=/root/install_ssh_key.sh \
+  --mount=type=secret,id=ssh-key,dst=/root/.ssh/id.key \
+  --mount=type=ssh \
+  sh /root/install_ssh_key.sh /root/.ssh/id.key common/openerd-go common.nas.dev.opnd.io 2222 git.dev.opnd.io  && \
+  sh /root/install_ssh_key.sh /root/.ssh/id.key gc/openerd-go gc.nas.dev.opnd.io 2222 git.dev.opnd.io  && \
+  go mod download

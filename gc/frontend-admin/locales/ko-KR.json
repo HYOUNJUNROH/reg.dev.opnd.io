@@ -1,0 +1,7 @@
+{
+  "hello": "안녕하세요, {name}!",
+  "language": "한글",
+  "menu": {
+    "home": "홈"
+  }
+}

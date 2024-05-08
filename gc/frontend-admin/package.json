@@ -1,0 +1,96 @@
+{
+  "name": "gc-frontend_admin",
+  "description": "gc frontend_admin",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "npx nuxi dev",
+    "build": "npx nuxi build",
+    "start": "node .output/server/index.mjs",
+    "preview": "npx nuxi preview",
+    "prettier:scss": "npx prettier --write assets/scss/**/*.scss",
+    "prettier:html": "npx prettier --write pages/**/*.html",
+    "prettier:vue": "npx prettier --write pages/**/*.vue components/**/*.vue layouts/**/*.vue composables/**/*.ts",
+    "upgrade-inter": "yarn upgrade-interactive",
+    "generate": "npx buf generate"
+  },
+  "devDependencies": {
+    "@bufbuild/buf": "^1.15.0",
+    "@bufbuild/protoc-gen-connect-es": "^0.8.6",
+    "@bufbuild/protoc-gen-es": "^1.2.0",
+    "@iconify/json": "^2.2.55",
+    "@intlify/nuxt3": "^0.2.4",
+    "@meforma/vue-toaster": "^1.3.0",
+    "@nuxt/eslint-config": "^0.1.1",
+    "@nuxt/image": "npm:@nuxt/image-edge@1.0.0-27968280.9739e4d",
+    "@nuxtjs/eslint-config-typescript": "^12.0.0",
+    "@nuxtjs/tailwindcss": "^6.6.0",
+    "@pinia-plugin-persistedstate/nuxt": "^1.1.1",
+    "@pinia/nuxt": "^0.4.9",
+    "@types/node": "^18.16.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.1",
+    "@typescript-eslint/parser": "^5.59.1",
+    "@vueuse/nuxt": "^10.1.0",
+    "eslint": "^8.39.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-plugin-html": "^7.1.0",
+    "eslint-plugin-nuxt": "^4.0.0",
+    "eslint-plugin-prettier": "^4.2.1",
+    "eslint-plugin-vue": "^9.11.0",
+    "graceful-fs": "^4.2.11",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.1",
+    "nuxt": "^3.4.2",
+    "prettier": "^2.8.8",
+    "prettier-plugin-multiline-arrays": "^1.1.3",
+    "sass": "^1.62.0",
+    "tailwindcss": "^3.3.2",
+    "typescript": "^5.0.4",
+    "unplugin-icons": "^0.16.1",
+    "unplugin-vue-components": "^0.24.1",
+    "vite-plugin-eslint": "^1.8.1"
+  },
+  "dependencies": {
+    "@bufbuild/connect-node": "^0.8.6",
+    "@bufbuild/connect-web": "^0.8.6",
+    "@bufbuild/protobuf": "^1.2.0",
+    "@headlessui/vue": "latest",
+    "@heroicons/vue": "^2.0.18",
+    "@mdi/font": "^7.2.96",
+    "@meforma/vue-toaster": "^1.3.0",
+    "@nuxt/module-builder": "^0.3.0",
+    "@nuxtjs/toast": "^3.3.1",
+    "@tailwindcss/forms": "^0.5.3",
+    "@tailwindcss/line-clamp": "^0.4.2",
+    "@vue-hero-icons/outline": "^1.7.2",
+    "autoprefixer": "^10.4.14",
+    "axios": "^1.3.6",
+    "date-fns": "^2.29.3",
+    "h3": "^1.6.4",
+    "jsonwebtoken": "^9.0.0",
+    "luxon": "^3.3.0",
+    "pinia": "^2.0.35",
+    "pinia-plugin-persistedstate": "^3.1.0",
+    "postcss": "^8.4.24",
+    "postcss-custom-properties": "^13.1.5",
+    "url-join": "^5.0.0",
+    "vue-toastification": "next"
+  },
+  "lint-staged": {
+    "*.{scss,sass,css}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{vue,html}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{ts,js}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.json": [
+      "prettier --write"
+    ]
+  },
+  "packageManager": "yarn@3.4.1"
+}
