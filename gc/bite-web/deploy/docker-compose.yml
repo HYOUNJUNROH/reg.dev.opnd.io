@@ -80,20 +80,20 @@ services:
         ipv4_address: "172.18.0.7"
     restart: always
 
-  app:
-    platform: linux/amd64
-    image: 'jc21/nginx-proxy-manager:2.9.18'
-    restart: unless-stopped
-    ports:
-      - '80:80'
-      - '81:81'
-      - '443:443'
-    volumes:
-      - ./npm-data:/data
-      - ./letsencrypt:/etc/letsencrypt
-      # - ./web-app/build:/web-app
-    networks:
-      - gc
+  #	app:
+  #	    platform: linux/amd64
+  #	    image: 'jc21/nginx-proxy-manager:2.9.18'
+  #	    restart: unless-stopped
+  #	    ports:
+  #	      - '80:80'
+  #	      - '81:81'
+  #	      - '443:443'
+  #	    volumes:
+  #	      - ./npm-data:/data
+  #	      - ./letsencrypt:/etc/letsencrypt
+  #	      # - ./web-app/build:/web-app
+  #	    networks:
+  #	      - gc
 
   postgres:
     # container_name: postgres
